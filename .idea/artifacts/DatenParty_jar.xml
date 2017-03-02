@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="DatenParty:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DatenParty_jar</output-path>
+    <root id="archive" name="DatenParty.jar">
+      <element id="module-output" name="DatenParty" />
+    </root>
+  </artifact>
+</component>
