@@ -6,6 +6,7 @@ import org.jsoup.select.Elements;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
@@ -55,8 +56,8 @@ public class DatenParty {
                 LocalDateTime t = LocalDateTime.parse(time.substring(0, time.indexOf("+")));
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text, t.getHour() + ":" + t.getMinute(), e, category)));
             } catch (IOException | ArrayIndexOutOfBoundsException e2) {
-                e2.printStackTrace();
                 System.out.println(e);
+                e2.printStackTrace();
             }
         return toJSON(values, "Zeit");
     }
@@ -78,6 +79,7 @@ public class DatenParty {
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category)));
             } catch (IOException e2) {
                 System.out.println(e);
+                e2.printStackTrace();
             }
         return toJSON(values, "Welt");
     }
@@ -88,11 +90,10 @@ public class DatenParty {
             try {
                 Document d = Jsoup.connect(e).get();
                 String text = d.select(".article-intro").get(0).text();
-                String time = d.select(".timeformat").attr("datetime");
                 String txt = e.split("/")[3];
                 String category = Curl.newCategory(text);
-                LocalDateTime t = LocalDateTime.parse(time.replace(" ", "T"));
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t.getHour() + ":" + t.getMinute(), e, category)));
+                LocalTime time = LocalTime.parse(d.select(".timeformat").attr("datetime").split(" ")[1]);
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, time.getHour() + ":" + time.getMinute(), e, category)));
             } catch (IOException e2) {
                 System.out.println(e);
             }
@@ -129,8 +130,10 @@ public class DatenParty {
         Elements ele = doc.select(cssQuery);
         ArrayList<String> list = new ArrayList<>();
         ele.forEach(e -> list.add(e.getElementsByAttribute("href").attr("href")));
-        if (rename) list.removeIf(e -> !e.startsWith("/") || isInList(e));
-        if (rename) list.replaceAll(e -> e = site + e);
+        if (rename) {
+            list.removeIf(e -> !e.startsWith("/") || isInList(e));
+            list.replaceAll(e -> e = site + e);
+        } else list.removeIf(e -> !e.startsWith("http://www.zeit.de") || isInList(e));
         Collections.shuffle(list);
         if (list.size() > 20) list.subList(20, list.size()).clear();
         return list;
@@ -146,7 +149,6 @@ public class DatenParty {
         zeit.forEach(array::add);
         welt.forEach(array::add);
         spiegel.forEach(array::add);
-        System.out.println(spiegel);
         faz.forEach(array::add);
         Collections.shuffle(array);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(daten), Charset.forName("UTF-8").newEncoder()));
