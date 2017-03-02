@@ -36,6 +36,7 @@ public class Curl {
         JSONParser parser = new JSONParser();
         JSONObject obj = (JSONObject) parser.parse(result);
         JSONArray array = (JSONArray) obj.get("entities");
+        if (array.size() == 0) return "Aktuell";
         array.sort(Comparator.comparing(e -> ((JSONObject)e).get("confidence").toString()));
         is.close();
         br.close();
