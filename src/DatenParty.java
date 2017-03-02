@@ -128,8 +128,8 @@ public class DatenParty {
         Document doc = Jsoup.connect(site).get();
         Elements ele = doc.select(cssQuery);
         ArrayList<String> list = new ArrayList<>();
-        ele.forEach(e -> list.add(e.attr("href")));
-        list.removeIf(e -> !e.startsWith("/") || isInList(e));
+        ele.forEach(e -> list.add(e.getElementsByAttribute("href").attr("href")));
+        if (rename) list.removeIf(e -> !e.startsWith("/") || isInList(e));
         if (rename) list.replaceAll(e -> e = site + e);
         Collections.shuffle(list);
         if (list.size() > 20) list.subList(20, list.size()).clear();
@@ -146,6 +146,7 @@ public class DatenParty {
         zeit.forEach(array::add);
         welt.forEach(array::add);
         spiegel.forEach(array::add);
+        System.out.println(spiegel);
         faz.forEach(array::add);
         Collections.shuffle(array);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(daten), Charset.forName("UTF-8").newEncoder()));
