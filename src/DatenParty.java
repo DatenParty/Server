@@ -51,7 +51,7 @@ public class DatenParty {
             try {
                 Document d = Jsoup.connect(e).get();
                 String text = d.select(".summary").text();
-                String category = Curl.newCategory(text);
+                String category = d.select(".article-heading__kicker").get(0).text();
                 String time = d.select(".metadata__date").attr("datetime");
                 LocalDateTime t = LocalDateTime.parse(time.substring(0, time.indexOf("+")));
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text, t.getHour() + ":" + t.getMinute(), e, category)));
@@ -64,7 +64,7 @@ public class DatenParty {
 
     private static ArrayList<JSONObject> getWelt() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
-        for (String e: getLinks("https://www.welt.de/", ".o-teaser__link", true))
+        for (String e: getLinks("https://www.welt.de", ".o-teaser__link", true))
             try {
                 Document d = Jsoup.connect(e).get();
                 String text;
@@ -75,7 +75,7 @@ public class DatenParty {
                     System.out.println(e);
                 }
                 String time = d.select(".c-publish-date").text();
-                String category = Curl.newCategory(text);
+                String category = d.select(".c-breadcrumb__element").get(0).text();
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category)));
             } catch (IOException e2) {
                 System.out.println(e);
@@ -86,12 +86,11 @@ public class DatenParty {
 
     private static ArrayList<JSONObject> getSpiegel() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
-        for (String e: getLinks("http://www.spiegel.de/", ".article-title", true))
+        for (String e: getLinks("http://www.spiegel.de", ".article-title", true))
             try {
                 Document d = Jsoup.connect(e).get();
                 String text = d.select(".article-intro").get(0).text();
-                String txt = e.split("/")[3];
-                String category = Curl.newCategory(text);
+                String category = d.select(".headline-intro").get(0).text();
                 LocalTime time = LocalTime.parse(d.select(".timeformat").attr("datetime").split(" ")[1]);
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, time.getHour() + ":" + time.getMinute(), e, category)));
             } catch (IOException e2) {
@@ -107,18 +106,17 @@ public class DatenParty {
             String text = d.select(".Copy").get(0).text();
             String time = d.select(".lastUpdated").text();
             String[] t = time.split(" ");
-            String txt = e.split("/")[4].split("-")[0];
-            String headline = txt.substring(0, 1).toUpperCase() + txt.substring(1);
+            String headline = d.select(".NavStep").get(0).text();
             try {
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, headline)));
             } catch (ArrayIndexOutOfBoundsException e2) {
                 try {
                     Document docu = Jsoup.connect("http://faz.net" + d.select(".mmNext").get(0).attr("href")).get();
                     String ti = docu.select(".date").get(0).text().split("")[1];
-                    String category = Curl.newCategory(text);
+                    String category = docu.select(".NavStep").get(0).text();
                     if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category)));
                 } catch (IndexOutOfBoundsException e3) {
-                    //
+                    System.out.println("Index: " + e);
                 }
             }
         }
