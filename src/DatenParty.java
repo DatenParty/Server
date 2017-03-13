@@ -54,7 +54,8 @@ public class DatenParty {
                 String category = d.select(".article-heading__kicker").get(0).text();
                 String time = d.select(".metadata__date").attr("datetime");
                 LocalDateTime t = LocalDateTime.parse(time.substring(0, time.indexOf("+")));
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text, t.getHour() + ":" + t.getMinute(), e, category)));
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text,
+                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category)));
             } catch (IOException | ArrayIndexOutOfBoundsException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
@@ -75,7 +76,7 @@ public class DatenParty {
                     System.out.println(e);
                 }
                 String time = d.select(".c-publish-date").text();
-                String category = d.select(".c-breadcrumb__element").get(2).text();
+                String category = d.select(".c-breadcrumb__element").get(1).text();
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category)));
             } catch (IOException e2) {
                 System.out.println(e);
@@ -91,10 +92,12 @@ public class DatenParty {
                 Document d = Jsoup.connect(e).get();
                 String text = d.select(".article-intro").get(0).text();
                 String category = d.select(".headline-intro").get(0).text();
-                LocalTime time = LocalTime.parse(d.select(".timeformat").attr("datetime").split(" ")[1]);
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, time.getHour() + ":" + time.getMinute(), e, category)));
-            } catch (IOException e2) {
+                LocalTime t = LocalTime.parse(d.select(".timeformat").attr("datetime").split(" ")[1]);
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text,
+                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category)));
+            } catch (Exception e2) {
                 System.out.println(e);
+                e2.printStackTrace();
             }
         return toJSON(values, "Spiegel");
     }
@@ -117,6 +120,7 @@ public class DatenParty {
                     if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category)));
                 } catch (IndexOutOfBoundsException e3) {
                     System.out.println("Index: " + e);
+                    e3.printStackTrace();
                 }
             }
         }

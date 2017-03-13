@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/DatenParty_jar</output-path>
     <root id="archive" name="DatenParty.jar">
       <element id="module-output" name="DatenParty" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/json-simple.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/res/jsoup-1.10.1.jar" path-in-jar="/" />
     </root>
   </artifact>
