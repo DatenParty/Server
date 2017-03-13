@@ -75,7 +75,7 @@ public class DatenParty {
                     System.out.println(e);
                 }
                 String time = d.select(".c-publish-date").text();
-                String category = d.select(".c-breadcrumb__element").get(0).text();
+                String category = d.select(".c-breadcrumb__element").get(2).text();
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category)));
             } catch (IOException e2) {
                 System.out.println(e);
@@ -106,14 +106,14 @@ public class DatenParty {
             String text = d.select(".Copy").get(0).text();
             String time = d.select(".lastUpdated").text();
             String[] t = time.split(" ");
-            String headline = d.select(".NavStep").get(0).text();
+            String headline = d.select(".NavStep").get(1).text();
             try {
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, headline)));
             } catch (ArrayIndexOutOfBoundsException e2) {
                 try {
                     Document docu = Jsoup.connect("http://faz.net" + d.select(".mmNext").get(0).attr("href")).get();
                     String ti = docu.select(".date").get(0).text().split("")[1];
-                    String category = docu.select(".NavStep").get(0).text();
+                    String category = docu.select(".NavStep").get(1).text();
                     if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category)));
                 } catch (IndexOutOfBoundsException e3) {
                     System.out.println("Index: " + e);

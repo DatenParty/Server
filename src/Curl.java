@@ -1,27 +1,21 @@
-import com.textrazor.AnalysisException;
-import com.textrazor.NetworkException;
-import org.json.simple.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Comparator;
 import java.util.stream.Collectors;
-import com.textrazor.TextRazor;
-import com.textrazor.annotations.*;
 
 public class Curl {
 
     public static void main(String[] args) throws Exception {
-        System.out.println(newCategory("Wo früher Güterzüge rangierten, leben heute mehrere Tausend Menschen. Jede freie Fläche wird genutzt, denn Bauland ist knapp in der wachsenden Stadt."));
-    }
-
-    static String newCategory2(String artice) throws Exception {
-        String apiKey = "67478d92d0d3719df13cab6e821bc6f6e900c93dd3d796be80c9f163";
-        TextRazor razor = new TextRazor(apiKey);
-        razor.setExtractors(Arrays.asList("entities", "words", "topics", "phrases"));
-        AnalyzedText txt = razor.analyze(artice);
-        return txt.getResponse().getTopics().get(0).toString();
+        //System.out.println(newCategory("Wo früher Güterzüge rangierten, leben heute mehrere Tausend Menschen. Jede freie Fläche wird genutzt, denn Bauland ist knapp in der wachsenden Stadt."));
     }
 
     static String newCategory(String artice) throws Exception {
