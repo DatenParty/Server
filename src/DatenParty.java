@@ -58,9 +58,9 @@ public class DatenParty {
                 String time = d.select(".metadata__date").attr("datetime");
                 LocalDateTime t = LocalDateTime.parse(time.substring(0, time.indexOf("+")));
                 String heading = d.select(".article-heading__title").text();
-                //String lang = new DetectLang(text).toString();
+                String imglink = d.select(".article__media-item").attr("src");
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text,
-                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading)));
+                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading, imglink)));
             } catch (IOException | ArrayIndexOutOfBoundsException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
@@ -100,8 +100,9 @@ public class DatenParty {
                 String category = d.select(".headline-intro").get(0).text();
                 LocalTime t = LocalTime.parse(d.select(".timeformat").attr("datetime").split(" ")[1]);
                 String heading = d.select(".headline").text();
+                String imglink = d.select(".spPanoGalleryTeaserPic").attr("src");
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text,
-                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading)));
+                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading, imglink)));
             } catch (Exception e2) {
                 System.out.println(e);
                 e2.printStackTrace();
@@ -118,8 +119,9 @@ public class DatenParty {
             String[] t = time.split(" ");
             String category = d.select(".NavStep").get(1).text();
             String heading = d.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
+            String imglink = d.select(".media").attr("src");
             try {
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, category, heading)));
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, category, heading, imglink)));
             } catch (ArrayIndexOutOfBoundsException e2) {
                 try {
                     Document docu = Jsoup.connect("http://faz.net" + d.select(".mmNext").get(0).attr("href")).get();
@@ -182,6 +184,7 @@ public class DatenParty {
                 put("article", l.get(1));
                 put("category", l.get(4));
                 put("heading", l.get(5));
+                put("imglink", l.get(6));
             }}));
         return array;
     }
