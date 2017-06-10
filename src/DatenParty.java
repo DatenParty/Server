@@ -54,8 +54,9 @@ public class DatenParty {
                 String category = d.select(".article-heading__kicker").get(0).text();
                 String time = d.select(".metadata__date").attr("datetime");
                 LocalDateTime t = LocalDateTime.parse(time.substring(0, time.indexOf("+")));
+                String heading = d.select(".article-heading__title").text();
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text,
-                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category)));
+                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading)));
             } catch (IOException | ArrayIndexOutOfBoundsException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
@@ -77,7 +78,8 @@ public class DatenParty {
                 }
                 String time = d.select(".c-publish-date").text();
                 String category = d.select(".c-breadcrumb__element").get(1).text();
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category)));
+                String heading = d.select(".c-headline").text();
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category, heading)));
             } catch (IOException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
@@ -93,8 +95,9 @@ public class DatenParty {
                 String text = d.select(".article-intro").get(0).text();
                 String category = d.select(".headline-intro").get(0).text();
                 LocalTime t = LocalTime.parse(d.select(".timeformat").attr("datetime").split(" ")[1]);
+                String heading = d.select(".headline").text();
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text,
-                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category)));
+                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading)));
             } catch (Exception e2) {
                 System.out.println(e);
                 e2.printStackTrace();
@@ -109,15 +112,17 @@ public class DatenParty {
             String text = d.select(".Copy").get(0).text();
             String time = d.select(".lastUpdated").text();
             String[] t = time.split(" ");
-            String headline = d.select(".NavStep").get(1).text();
+            String category = d.select(".NavStep").get(1).text();
+            String heading = d.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
             try {
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, headline)));
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, category, heading)));
             } catch (ArrayIndexOutOfBoundsException e2) {
                 try {
                     Document docu = Jsoup.connect("http://faz.net" + d.select(".mmNext").get(0).attr("href")).get();
                     String ti = docu.select(".date").get(0).text().split("")[1];
-                    String category = docu.select(".NavStep").get(1).text();
-                    if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category)));
+                    String category2 = docu.select(".NavStep").get(1).text();
+                    String heading2 = docu.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
+                    if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category2, heading2)));
                 } catch (IndexOutOfBoundsException e3) {
                     System.out.println("Index: " + e);
                     e3.printStackTrace();
@@ -172,6 +177,7 @@ public class DatenParty {
                 put("link", l.get(3));
                 put("article", l.get(1));
                 put("category", l.get(4));
+                put("heading", l.get(5));
             }}));
         return array;
     }
