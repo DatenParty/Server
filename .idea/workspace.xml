@@ -7,9 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c124f229-94a8-4fef-8479-a65f3b6eb4fa" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Analyze.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/res.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DatenParty.iml" afterPath="$PROJECT_DIR$/DatenParty.iml" />
     </list>
     <ignored path="DatenParty.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -861,7 +860,7 @@
       <workItem from="1489420812293" duration="4200000" />
       <workItem from="1489581599881" duration="53000" />
       <workItem from="1489783616630" duration="1000" />
-      <workItem from="1497038766642" duration="1710000" />
+      <workItem from="1497038766642" duration="1812000" />
     </task>
     <task id="LOCAL-00001" summary="Kürzerer Code">
       <created>1488031016322</created>
@@ -968,11 +967,25 @@
       <option name="project" value="LOCAL" />
       <updated>1489427740171</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Libraries hinzugefügt">
+      <created>1497085699482</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1497085699482</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Libraries hinzugefügt">
+      <created>1497085771964</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1497085771964</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="21235000" />
+    <option name="totallyTimeSpent" value="21337000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
@@ -1036,7 +1049,8 @@
     <MESSAGE value="Spiegel und Zeit hinzugefügt" />
     <MESSAGE value="Kategorien repariert" />
     <MESSAGE value="Zeit repariert" />
-    <option name="LAST_COMMIT_MESSAGE" value="Zeit repariert" />
+    <MESSAGE value="Libraries hinzugefügt" />
+    <option name="LAST_COMMIT_MESSAGE" value="Libraries hinzugefügt" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
