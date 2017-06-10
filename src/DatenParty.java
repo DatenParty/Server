@@ -58,6 +58,7 @@ public class DatenParty {
                 String time = d.select(".metadata__date").attr("datetime");
                 LocalDateTime t = LocalDateTime.parse(time.substring(0, time.indexOf("+")));
                 String heading = d.select(".article-heading__title").text();
+                //String lang = new DetectLang(text).toString();
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text,
                         (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading)));
             } catch (IOException | ArrayIndexOutOfBoundsException e2) {
