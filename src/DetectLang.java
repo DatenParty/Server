@@ -9,9 +9,9 @@ import org.apache.http.util.EntityUtils;
 
 import java.net.URI;
 
-public class Analyze {
-    public Analyze(String text) {
-        HttpClient httpclient = HttpClients.createDefault();
+public class DetectLang {
+    public DetectLang(String txt)
+    {  HttpClient httpclient = HttpClients.createDefault();
 
         try {
             URIBuilder builder = new URIBuilder("https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/languages");
@@ -25,7 +25,7 @@ public class Analyze {
 
 
             // Request body
-            StringEntity reqEntity = new StringEntity(text);
+            StringEntity reqEntity = new StringEntity(txt);
             request.setEntity(reqEntity);
 
             HttpResponse response = httpclient.execute(request);
@@ -41,6 +41,6 @@ public class Analyze {
     }
 
     public static void main(String[] args) {
-        new Analyze("Heute ist es schön");
+        new DetectLang("{\"documents\":[{\"id\": \"sampleText\",\"text\": \"Auch gibt es niemanden, der den Schmerz an sich liebt, sucht oder wuenscht, nur\"}]}\n");
     }
 }
