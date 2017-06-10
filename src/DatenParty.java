@@ -97,7 +97,8 @@ public class DatenParty {
                 String time = d.select(".c-publish-date").text();
                 String category = d.select(".c-breadcrumb__element").get(1).text();
                 String heading = d.select(".c-headline").text();
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category, heading, null)));
+                String imglink = d.getElementsByTag("img").attr("onload", "if (window.performance && window.performance.mark && window.performance.clearMarks) { performance.clearMarks('Opener Image'); performance.mark('Opener Image');}").attr("src");
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category, heading, imglink)));
             } catch (IOException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
@@ -114,7 +115,8 @@ public class DatenParty {
                 String category = d.select(".headline-intro").get(0).text();
                 LocalTime t = LocalTime.parse(d.select(".timeformat").attr("datetime").split(" ")[1]);
                 String heading = d.select(".headline").text();
-                String imglink = d.select(".spPanoGalleryTeaserPic").attr("src");
+                String imglink = d.select(".spPanoImageTeaserPic").attr("src");
+                if (imglink.equals("")) imglink = d.select(".spPanoPlayerTeaserPic").attr("src");
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text,
                         (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading, imglink)));
             } catch (Exception e2) {
@@ -133,7 +135,7 @@ public class DatenParty {
             String[] t = time.split(" ");
             String category = d.select(".NavStep").get(1).text();
             String heading = d.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
-            String imglink = d.select(".media").attr("src");
+            String imglink = d.select(".media").get(1).attr("src");
             try {
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, category, heading, imglink)));
             } catch (ArrayIndexOutOfBoundsException e2) {
