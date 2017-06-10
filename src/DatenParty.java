@@ -45,6 +45,8 @@ public class DatenParty {
         //FAZ
         add("/aktuell/reise");
         add("/aktuell/frankfurter");
+        add("/aktuell/stil");
+        add("/aktuell/beruf-chance");
     }};
 
      /** holt sich alle Artikel von der Website der Zeit*/
@@ -83,7 +85,7 @@ public class DatenParty {
                 String time = d.select(".c-publish-date").text();
                 String category = d.select(".c-breadcrumb__element").get(1).text();
                 String heading = d.select(".c-headline").text();
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category, heading)));
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category, heading, null)));
             } catch (IOException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
@@ -128,7 +130,7 @@ public class DatenParty {
                     String ti = docu.select(".date").get(0).text().split("")[1];
                     String category2 = docu.select(".NavStep").get(1).text();
                     String heading2 = docu.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
-                    if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category2, heading2)));
+                    if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category2, heading2, imglink)));
                 } catch (IndexOutOfBoundsException e3) {
                     System.out.println("Index: " + e);
                     e3.printStackTrace();
@@ -165,7 +167,7 @@ public class DatenParty {
         faz.forEach(array::add);
         Collections.shuffle(array);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(daten), Charset.forName("UTF-8").newEncoder()));
-        writer.write(array.toJSONString());
+        writer.write(DetectLang.getLanguage(array).toJSONString());
         Log.write("daten.json wurde aktualisiert!");
         Log.write("Insgesamt " + array.size() + " Artikel");
         writer.close();
@@ -190,12 +192,13 @@ public class DatenParty {
     }
     /** diese Funktion nimmt sich die Liks und erstellt eine ID */
     private static String generateID(String text, int mode) {
+        int random = new Random().nextInt(1000);
         if (mode == 1) { //Spiegel, FAZ
             String cut = text.split("-")[text.split("-").length-1];
-            return cut.split("\\.")[0];
+            return cut.split("\\.")[0] + random;
         } else if (mode == 2) { //Welt
             String cut = text.split("/")[text.split("/").length-2];
-            return cut.split("e")[1];
+            return cut.split("e")[1] + random;
         } else { //Zeit
             String[] array = text.split("/");
             String cut = array[array.length - 1];
@@ -204,7 +207,7 @@ public class DatenParty {
                     (int)cut.charAt(0) +
                     (int)cut.charAt(1) +
                     (int)cut.charAt(cut.length()-2) +
-                    (int)cut.charAt(cut.length()-1);
+                    (int)cut.charAt(cut.length()-1) + random;
         }
     }
     /**Diese Funktion iteriert über die Listen und findet heraus ob der Link sich in der Blacklist befindet */

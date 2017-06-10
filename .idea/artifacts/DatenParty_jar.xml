@@ -3,6 +3,18 @@
     <output-path>$PROJECT_DIR$/out/artifacts/DatenParty_jar</output-path>
     <root id="archive" name="DatenParty.jar">
       <element id="module-output" name="DatenParty" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/jna-4.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/json-simple.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/jsoup-1.10.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/httpcore-4.4.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/httpmime-4.5.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/fluent-hc-4.5.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/httpclient-4.5.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/commons-codec-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/jna-platform-4.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/commons-logging-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/httpclient-win-4.5.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/res/httpclient-cache-4.5.3.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
