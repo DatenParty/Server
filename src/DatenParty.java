@@ -14,6 +14,8 @@ public class DatenParty {
 
     private final static String daten = "/var/datenparty/daten.json";
 
+    /** Welche Nachrichten wollen wir nicht herunterladen */
+
     private static ArrayList<String> blacklist = new ArrayList<String>() {{
         //Zeit
         add("http://www.zeit.de/zeit-magazin");
@@ -45,6 +47,7 @@ public class DatenParty {
         add("/aktuell/frankfurter");
     }};
 
+     /** holt sich alle Artikel von der Website der Zeit*/
     private static ArrayList<JSONObject> getZeit() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
         for (String e: getLinks("http://www.zeit.de/index", ".teaser-small__combined-link", false))
@@ -54,15 +57,16 @@ public class DatenParty {
                 String category = d.select(".article-heading__kicker").get(0).text();
                 String time = d.select(".metadata__date").attr("datetime");
                 LocalDateTime t = LocalDateTime.parse(time.substring(0, time.indexOf("+")));
+                String heading = d.select(".article-heading__title").text();
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text,
-                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category)));
+                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading)));
             } catch (IOException | ArrayIndexOutOfBoundsException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
             }
         return toJSON(values, "Zeit");
     }
-
+    /** holt sich alle Artikel von der Website der Welt */
     private static ArrayList<JSONObject> getWelt() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
         for (String e: getLinks("https://www.welt.de", ".o-teaser__link", true))
@@ -77,14 +81,15 @@ public class DatenParty {
                 }
                 String time = d.select(".c-publish-date").text();
                 String category = d.select(".c-breadcrumb__element").get(1).text();
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category)));
+                String heading = d.select(".c-headline").text();
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category, heading)));
             } catch (IOException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
             }
         return toJSON(values, "Welt");
     }
-
+    /** holt sich alle Artikel von der Website Spiegel.de */
     private static ArrayList<JSONObject> getSpiegel() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
         for (String e: getLinks("http://www.spiegel.de", ".article-title", true))
@@ -93,15 +98,16 @@ public class DatenParty {
                 String text = d.select(".article-intro").get(0).text();
                 String category = d.select(".headline-intro").get(0).text();
                 LocalTime t = LocalTime.parse(d.select(".timeformat").attr("datetime").split(" ")[1]);
+                String heading = d.select(".headline").text();
                 if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text,
-                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category)));
+                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading)));
             } catch (Exception e2) {
                 System.out.println(e);
                 e2.printStackTrace();
             }
         return toJSON(values, "Spiegel");
     }
-
+    /** holt sich alle Artikel von der Website der FAZ */
     private static ArrayList<JSONObject> getFAZ() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
         for (String e: getLinks("http://www.faz.net/", ".TeaserHeadLink", true)) {
@@ -109,15 +115,17 @@ public class DatenParty {
             String text = d.select(".Copy").get(0).text();
             String time = d.select(".lastUpdated").text();
             String[] t = time.split(" ");
-            String headline = d.select(".NavStep").get(1).text();
+            String category = d.select(".NavStep").get(1).text();
+            String heading = d.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
             try {
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, headline)));
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, category, heading)));
             } catch (ArrayIndexOutOfBoundsException e2) {
                 try {
                     Document docu = Jsoup.connect("http://faz.net" + d.select(".mmNext").get(0).attr("href")).get();
                     String ti = docu.select(".date").get(0).text().split("")[1];
-                    String category = docu.select(".NavStep").get(1).text();
-                    if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category)));
+                    String category2 = docu.select(".NavStep").get(1).text();
+                    String heading2 = docu.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
+                    if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category2, heading2)));
                 } catch (IndexOutOfBoundsException e3) {
                     System.out.println("Index: " + e);
                     e3.printStackTrace();
@@ -126,7 +134,7 @@ public class DatenParty {
         }
         return toJSON(values, "FAZ");
     }
-
+    /** hier holt sich das Programm die Links der verschiedenen Artikel */
     private static ArrayList<String> getLinks(String site, String cssQuery, boolean rename) throws Exception {
         Document doc = Jsoup.connect(site).get();
         Elements ele = doc.select(cssQuery);
@@ -140,7 +148,7 @@ public class DatenParty {
         if (list.size() > 20) list.subList(20, list.size()).clear();
         return list;
     }
-
+    /** Hier werden alle Daten gesammelt und in ein Json verpackt */
     public static void main(String[] args) throws Exception {
         Log.write("start update");
         ArrayList<JSONObject> zeit = getZeit();
@@ -159,7 +167,7 @@ public class DatenParty {
         Log.write("Insgesamt " + array.size() + " Artikel");
         writer.close();
     }
-
+    /** Diese Funktion compeliert ein normales Array zu einem Json Array */
     private static ArrayList<JSONObject> toJSON(ArrayList<ArrayList<String>> values, String author) throws Exception {
         ArrayList<JSONObject> array = new ArrayList<>();
         values.forEach(l ->
@@ -172,10 +180,11 @@ public class DatenParty {
                 put("link", l.get(3));
                 put("article", l.get(1));
                 put("category", l.get(4));
+                put("heading", l.get(5));
             }}));
         return array;
     }
-
+    /** diese Funktion nimmt sich die Liks und erstellt eine ID */
     private static String generateID(String text, int mode) {
         if (mode == 1) { //Spiegel, FAZ
             String cut = text.split("-")[text.split("-").length-1];
@@ -194,7 +203,7 @@ public class DatenParty {
                     (int)cut.charAt(cut.length()-1);
         }
     }
-
+    /**Diese Funktion iteriert über die Listen und findet heraus ob der Link sich in der Blacklist befindet */
     private static boolean isInList(String e) {
         for (String x: blacklist) if(e.startsWith(x)) return true;
         return false;
