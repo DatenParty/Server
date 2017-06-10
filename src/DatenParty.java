@@ -151,7 +151,7 @@ public class DatenParty {
         }
         return toJSON(values, "FAZ");
     }
-
+    /** Informationen werden vom guardian geladen */
     private static ArrayList<JSONObject> getGuardian() {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
         try {
