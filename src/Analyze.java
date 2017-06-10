@@ -25,7 +25,7 @@ public class Analyze {
 
 
             // Request body
-            StringEntity reqEntity = new StringEntity("{body}");
+            StringEntity reqEntity = new StringEntity(text);
             request.setEntity(reqEntity);
 
             HttpResponse response = httpclient.execute(request);
@@ -38,5 +38,9 @@ public class Analyze {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public static void main(String[] args) {
+        new Analyze("Heute ist es schön");
     }
 }
