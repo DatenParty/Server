@@ -22,7 +22,8 @@ import java.util.Random;
 public class DatenParty {
 
     private final static String daten = "/var/datenparty/daten.json";
-    public final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyy, k:mm:ss");
+    private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyy, HH:mm:ss");
+    private final static DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
 
     /** Welche Nachrichten wollen wir nicht herunterladen */
 
@@ -48,6 +49,8 @@ public class DatenParty {
         add("/newsticker");
         add("/satire");
         add("/politik/ausland/video");
+        add("/regionales");
+
         //Spiegel
         add("/spiegel");
         add("/stil");
@@ -66,19 +69,19 @@ public class DatenParty {
         add("https://www.theguardian.com/sport/live");
         /**/ add("https://www.theguardian.com/commentisfree"); /**/
         add("https://www.theguardian.com/fashion");
+        add("https://www.theguardian.com/politics/blog/live");
     }};
 
      /** holt sich alle Artikel von der Website der Zeit*/
     private static ArrayList<JSONObject> getZeit() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
-        for (String e: getLinks("http://www.zeit.de/index", ".teaser-small__combined-link", false))
+        for (String e: getLinks("http://www.zeit.de/index", ".teaser-small__combined-link", false, "http://www.zeit.de"))
             try {
                 Document d = Jsoup.connect(e).get();
                 String text = d.select(".summary").text();
                 String category = d.select(".article-heading__kicker").get(0).text();
                 String dateText = d.select(".metadata__date").attr("datetime");
                 String date = dateText.split("T")[0] + " " + dateText.split("T")[1].split("\\+")[0];
-                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
                 LocalDateTime t = LocalDateTime.parse(date, format);
                 String heading = d.select(".article-heading__title").text();
                 String imglink = d.select(".article__media-item").attr("src");
@@ -92,7 +95,7 @@ public class DatenParty {
     /** holt sich alle Artikel von der Website der Welt */
     private static ArrayList<JSONObject> getWelt() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
-        for (String e: getLinks("https://www.welt.de", ".o-teaser__link", true))
+        for (String e: getLinks("https://www.welt.de", ".o-teaser__link", true, ""))
             try {
                 Document d = Jsoup.connect(e).get();
                 String text;
@@ -104,7 +107,6 @@ public class DatenParty {
                 }
                 String dateText = d.select(".c-publish-date").attr("datetime");
                 String date = dateText.split("T")[0] + " " + dateText.split("T")[1].split("Z")[0];
-                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
                 LocalDateTime t = LocalDateTime.parse(date, format);
                 String category = d.select(".c-breadcrumb__element").get(1).text();
                 String heading = d.select(".c-headline").text();
@@ -125,13 +127,12 @@ public class DatenParty {
     /** holt sich alle Artikel von der Website Spiegel.de */
     private static ArrayList<JSONObject> getSpiegel() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
-        for (String e: getLinks("http://www.spiegel.de", ".article-title", true))
+        for (String e: getLinks("http://www.spiegel.de", ".article-title", true, ""))
             try {
                 Document d = Jsoup.connect(e).get();
                 String text = d.select(".article-intro").get(0).text();
                 String category = d.select(".headline-intro").get(0).text();
                 String date = d.select(".timeformat").attr("datetime");
-                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
                 LocalDateTime t = LocalDateTime.parse(date, format);
                 String heading = d.select(".headline").text();
                 String imglink = d.select(".spPanoImageTeaserPic").attr("src");
@@ -146,33 +147,35 @@ public class DatenParty {
     /** holt sich alle Artikel von der Website der FAZ */
     private static ArrayList<JSONObject> getFAZ() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
-        for (String e: getLinks("http://www.faz.net/", ".TeaserHeadLink", true)) {
+        for (String e: getLinks("http://www.faz.net/", ".TeaserHeadLink", true, "")) {
             try {
                 Document d = Jsoup.connect(e).get();
                 String text = d.select(".Copy").get(0).text();
-                String dateText = d.select(".Datum").attr("content");
-                String date = dateText.split("T")[0] + " " + dateText.split("T")[1].split("\\+")[0];
-                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
-                LocalDateTime t = LocalDateTime.parse(date, format);
-                String category;
-                try {
-                    category = d.select(".NavStep").get(1).text();
-                } catch (IndexOutOfBoundsException e3) {
-                    category = d.select(".Stichwort").text();
-                }
-                String heading = d.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
                 String imglink = d.select(".MediaLink").get(0).getElementsByTag("a").get(0).select(".media").attr("src");
                 try {
+                    String dateText = d.select(".Datum").attr("content");
+                    String date = dateText.split("T")[0] + " " + dateText.split("T")[1].split("\\+")[0];
+                    LocalDateTime t = LocalDateTime.parse(date, format);
+                    String category;
+                    try {
+                        category = d.select(".NavStep").get(1).text();
+                    } catch (IndexOutOfBoundsException e3) {
+                        category = d.select(".Stichwort").text();
+                    }
+                    String heading = d.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
+
                     if (!text.equals(""))
                         values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t.format(formatter), e, category, heading, imglink)));
                 } catch (ArrayIndexOutOfBoundsException e2) {
                     try {
                         Document docu = Jsoup.connect("http://faz.net" + d.select(".mmNext").get(0).attr("href")).get();
-                        String ti = docu.select(".date").get(0).text().split("")[1];
+                        String ti = docu.select(".date").get(0).attr("content");
+                        String temporal = ti.split("T")[0] + " " + ti.split("T")[1].split("\\+")[0];
+                        LocalDateTime time = LocalDateTime.parse(temporal, format);
                         String category2 = docu.select(".NavStep").get(1).text();
                         String heading2 = docu.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
                         if (!text.equals(""))
-                            values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category2, heading2, imglink)));
+                            values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, time.format(formatter), e, category2, heading2, imglink)));
                     } catch (IndexOutOfBoundsException | DateTimeParseException e3) {
                         System.out.println("Index: " + e);
                         e3.printStackTrace();
@@ -189,14 +192,13 @@ public class DatenParty {
     private static ArrayList<JSONObject> getGuardian() {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
         try {
-            ArrayList<String> links = getLinks("https://www.theguardian.com/international", ".u-faux-block-link__overlay", false);
+            ArrayList<String> links = getLinks("https://www.theguardian.com/international", ".u-faux-block-link__overlay", false, "https://www.theguardian.com");
             for (String e: links) {
                 try {
                     Document d = Jsoup.connect(e).get();
                     String text = d.select(".content__article-body").get(0).getElementsByTag("p").get(0).text();
                     String dateText = d.select(".content__dateline-wpd").attr("datetime");
                     String date = dateText.split("T")[0] + " " + dateText.split("T")[1].split("\\+")[0];
-                    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
                     LocalDateTime t = LocalDateTime.parse(date, format);
                     String category = d.select(".content__section-label__link").text();
                     String heading = d.select(".content__headline").get(0).text();
@@ -215,7 +217,7 @@ public class DatenParty {
     }
 
     /** hier holt sich das Programm die Links der verschiedenen Artikel */
-    private static ArrayList<String> getLinks(String site, String cssQuery, boolean rename) throws Exception {
+    private static ArrayList<String> getLinks(String site, String cssQuery, boolean rename, String prefix) throws Exception {
         Document doc = Jsoup.connect(site).get();
         Elements ele = doc.select(cssQuery);
         ArrayList<String> list = new ArrayList<>();
@@ -226,7 +228,7 @@ public class DatenParty {
             list.replaceAll(e -> e = site + e);
         } else {
             for (String e: list)
-                if ((e.startsWith("http://www.zeit.de") || e.startsWith("https://www.theguardian.com")) && !isInList(e)) newList.add(e);
+                if ((e.startsWith(prefix)) && !isInList(e)) newList.add(e);
             list = newList;
         }
         Collections.shuffle(list);
