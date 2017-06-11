@@ -13,10 +13,7 @@ import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class DatenParty {
@@ -246,7 +243,7 @@ public class DatenParty {
             getSpiegel().forEach(array::add);
             getFAZ().forEach(array::add);
             getGuardian().forEach(array::add);
-            Collections.shuffle(array);
+            array.sort(Comparator.comparing(e -> LocalDateTime.parse((String)((JSONObject) e).get("date"), formatter)).reversed());
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(daten), Charset.forName("UTF-8").newEncoder()));
             writer.write(DetectLang.getLanguage(array).toJSONString());
             Log.write("daten.json wurde aktualisiert!");
