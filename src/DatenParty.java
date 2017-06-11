@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +22,7 @@ import java.util.Random;
 public class DatenParty {
 
     private final static String daten = "/var/datenparty/daten.json";
+    public final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyy, k:mm:ss");
 
     /** Welche Nachrichten wollen wir nicht herunterladen */
 
@@ -34,7 +36,9 @@ public class DatenParty {
         add("http://www.zeit.de/freitext");
         add("http://www.zeit.de/video");
         add("http://www.zeit.de/vorabmeldungen");
-        add("http://www.zeit.de/sport");
+        add("http://www.zeit.de/karriere");
+        add("http://www.zeit.de/sport/nationalmannschaft-ticker");
+
         //Welt
         add("/mediathek");
         add("/debatte");
@@ -59,6 +63,9 @@ public class DatenParty {
         add("https://www.theguardian.com/world");
         add("https://www.theguardian.com/travel");
         add("https://www.theguardian.com/artanddesign");
+        add("https://www.theguardian.com/sport/live");
+        /**/ add("https://www.theguardian.com/commentisfree"); /**/
+        add("https://www.theguardian.com/fashion");
     }};
 
      /** holt sich alle Artikel von der Website der Zeit*/
@@ -69,13 +76,14 @@ public class DatenParty {
                 Document d = Jsoup.connect(e).get();
                 String text = d.select(".summary").text();
                 String category = d.select(".article-heading__kicker").get(0).text();
-                String time = d.select(".metadata__date").attr("datetime");
-                LocalDateTime t = LocalDateTime.parse(time.substring(0, time.indexOf("+")));
+                String dateText = d.select(".metadata__date").attr("datetime");
+                String date = dateText.split("T")[0] + " " + dateText.split("T")[1].split("\\+")[0];
+                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
+                LocalDateTime t = LocalDateTime.parse(date, format);
                 String heading = d.select(".article-heading__title").text();
                 String imglink = d.select(".article__media-item").attr("src");
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text,
-                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading, imglink)));
-            } catch (IOException | IndexOutOfBoundsException e2) {
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 3), text, t.format(formatter), e, category, heading, imglink)));
+            } catch (IOException | IndexOutOfBoundsException | DateTimeParseException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
             }
@@ -94,12 +102,21 @@ public class DatenParty {
                     text = d.select(".c-summary__headline").text();
                     System.out.println(e);
                 }
-                String time = d.select(".c-publish-date").text();
+                String dateText = d.select(".c-publish-date").attr("datetime");
+                String date = dateText.split("T")[0] + " " + dateText.split("T")[1].split("Z")[0];
+                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
+                LocalDateTime t = LocalDateTime.parse(date, format);
                 String category = d.select(".c-breadcrumb__element").get(1).text();
                 String heading = d.select(".c-headline").text();
-                String imglink = d.getElementsByTag("img").attr("onload", "if (window.performance && window.performance.mark && window.performance.clearMarks) { performance.clearMarks('Opener Image'); performance.mark('Opener Image');}").attr("src");
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, time.split(" ")[1], e, category, heading, imglink)));
-            } catch (IOException e2) {
+                String imglink;
+                try {
+                    imglink = d.select(".o-element__image").get(0).getElementsByTag("img").attr("src");
+                } catch (IndexOutOfBoundsException e2) {
+                    String style = d.select(".c-placeholder--is-preview").attr("style");
+                    imglink = style.substring(22, style.length()-5);
+                }
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 2), text, t.format(formatter), e, category, heading, imglink)));
+            } catch (IOException | IndexOutOfBoundsException | DateTimeParseException e2) {
                 System.out.println(e);
                 e2.printStackTrace();
             }
@@ -113,12 +130,13 @@ public class DatenParty {
                 Document d = Jsoup.connect(e).get();
                 String text = d.select(".article-intro").get(0).text();
                 String category = d.select(".headline-intro").get(0).text();
-                LocalTime t = LocalTime.parse(d.select(".timeformat").attr("datetime").split(" ")[1]);
+                String date = d.select(".timeformat").attr("datetime");
+                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
+                LocalDateTime t = LocalDateTime.parse(date, format);
                 String heading = d.select(".headline").text();
                 String imglink = d.select(".spPanoImageTeaserPic").attr("src");
                 if (imglink.equals("")) imglink = d.select(".spPanoPlayerTeaserPic").attr("src");
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text,
-                        (t.getHour() < 10 ? "0" + t.getHour() : t.getHour()) + ":" + (t.getMinute() < 10 ? "0" + t.getMinute() : t.getMinute()), e, category, heading, imglink)));
+                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t.format(formatter), e, category, heading, imglink)));
             } catch (Exception e2) {
                 System.out.println(e);
                 e2.printStackTrace();
@@ -129,26 +147,40 @@ public class DatenParty {
     private static ArrayList<JSONObject> getFAZ() throws Exception {
         ArrayList<ArrayList<String>> values = new ArrayList<>();
         for (String e: getLinks("http://www.faz.net/", ".TeaserHeadLink", true)) {
-            Document d = Jsoup.connect(e).get();
-            String text = d.select(".Copy").get(0).text();
-            String time = d.select(".lastUpdated").text();
-            String[] t = time.split(" ");
-            String category = d.select(".NavStep").get(1).text();
-            String heading = d.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
-            String imglink = d.select(".media").get(1).attr("src");
             try {
-                if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t[2], e, category, heading, imglink)));
-            } catch (ArrayIndexOutOfBoundsException e2) {
+                Document d = Jsoup.connect(e).get();
+                String text = d.select(".Copy").get(0).text();
+                String dateText = d.select(".Datum").attr("content");
+                String date = dateText.split("T")[0] + " " + dateText.split("T")[1].split("\\+")[0];
+                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
+                LocalDateTime t = LocalDateTime.parse(date, format);
+                String category;
                 try {
-                    Document docu = Jsoup.connect("http://faz.net" + d.select(".mmNext").get(0).attr("href")).get();
-                    String ti = docu.select(".date").get(0).text().split("")[1];
-                    String category2 = docu.select(".NavStep").get(1).text();
-                    String heading2 = docu.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
-                    if (!text.equals("")) values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category2, heading2, imglink)));
+                    category = d.select(".NavStep").get(1).text();
                 } catch (IndexOutOfBoundsException e3) {
-                    System.out.println("Index: " + e);
-                    e3.printStackTrace();
+                    category = d.select(".Stichwort").text();
                 }
+                String heading = d.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
+                String imglink = d.select(".MediaLink").get(0).getElementsByTag("a").get(0).select(".media").attr("src");
+                try {
+                    if (!text.equals(""))
+                        values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, t.format(formatter), e, category, heading, imglink)));
+                } catch (ArrayIndexOutOfBoundsException e2) {
+                    try {
+                        Document docu = Jsoup.connect("http://faz.net" + d.select(".mmNext").get(0).attr("href")).get();
+                        String ti = docu.select(".date").get(0).text().split("")[1];
+                        String category2 = docu.select(".NavStep").get(1).text();
+                        String heading2 = docu.getElementsByTag("h2").attr("itemprop", "headline").get(0).ownText();
+                        if (!text.equals(""))
+                            values.add(new ArrayList<>(Arrays.asList(generateID(e, 1), text, ti, e, category2, heading2, imglink)));
+                    } catch (IndexOutOfBoundsException | DateTimeParseException e3) {
+                        System.out.println("Index: " + e);
+                        e3.printStackTrace();
+                    }
+                }
+            } catch (IndexOutOfBoundsException | DateTimeParseException e2) {
+                System.out.println(e);
+                e2.printStackTrace();
             }
         }
         return toJSON(values, "FAZ");
@@ -162,12 +194,15 @@ public class DatenParty {
                 try {
                     Document d = Jsoup.connect(e).get();
                     String text = d.select(".content__article-body").get(0).getElementsByTag("p").get(0).text();
-                    String time = d.select(".content__dateline-time").get(0).text().split(" ")[0];
+                    String dateText = d.select(".content__dateline-wpd").attr("datetime");
+                    String date = dateText.split("T")[0] + " " + dateText.split("T")[1].split("\\+")[0];
+                    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyy-MM-dd k:mm:ss");
+                    LocalDateTime t = LocalDateTime.parse(date, format);
                     String category = d.select(".content__section-label__link").text();
-                    String heading = d.select(".content__headline").text();
+                    String heading = d.select(".content__headline").get(0).text();
                     String imglink = d.select(".responsive-img").attr("src");
                     if (!text.equals(""))
-                        values.add(new ArrayList<>(Arrays.asList(generateID(e, 4), text, time, e, category, heading, imglink)));
+                        values.add(new ArrayList<>(Arrays.asList(generateID(e, 4), text, t.format(formatter), e, category, heading, imglink)));
                 } catch (Exception e2) {
                     System.out.println(e);
                     e2.printStackTrace();
@@ -226,8 +261,6 @@ public class DatenParty {
         values.forEach(l ->
             array.add(new JSONObject() {{
                 put("id", l.get(0));
-                put("yes", 0);
-                put("no", 0);
                 put("author", author);
                 put("date", l.get(2));
                 put("link", l.get(3));
