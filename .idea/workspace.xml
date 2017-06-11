@@ -7,9 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c124f229-94a8-4fef-8479-a65f3b6eb4fa" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/API.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/DatenParty.java" afterPath="$PROJECT_DIR$/src/DatenParty.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/API.java" afterPath="$PROJECT_DIR$/src/API.java" />
     </list>
     <ignored path="DatenParty.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -48,12 +47,10 @@
       <file leaf-file-name="API.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/API.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="17" column="36" lean-forward="true" selection-start-line="17" selection-start-column="36" selection-end-line="17" selection-end-column="36" />
+            <state relative-caret-position="315">
+              <caret line="21" column="5" lean-forward="false" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#907#908#0" expanded="true" />
-                <element signature="e#932#933#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -810,7 +807,7 @@
       <workItem from="1489581599881" duration="53000" />
       <workItem from="1489783616630" duration="1000" />
       <workItem from="1497038766642" duration="32599000" />
-      <workItem from="1497164410065" duration="6509000" />
+      <workItem from="1497164410065" duration="7529000" />
     </task>
     <task id="LOCAL-00001" summary="Kürzerer Code">
       <created>1488031016322</created>
@@ -994,11 +991,18 @@
       <option name="project" value="LOCAL" />
       <updated>1497170919836</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="API hinzugefügt">
+      <created>1497173232521</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1497173232521</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="58633000" />
+    <option name="totallyTimeSpent" value="59653000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
@@ -1072,7 +1076,8 @@
     <MESSAGE value="Neue Quelle: The Guardian" />
     <MESSAGE value="Datum hinzugefügt" />
     <MESSAGE value="getLinks optimiert" />
-    <option name="LAST_COMMIT_MESSAGE" value="getLinks optimiert" />
+    <MESSAGE value="API hinzugefügt" />
+    <option name="LAST_COMMIT_MESSAGE" value="API hinzugefügt" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1200,12 +1205,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/API.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="36" lean-forward="true" selection-start-line="17" selection-start-column="36" selection-end-line="17" selection-end-column="36" />
+        <state relative-caret-position="315">
+          <caret line="21" column="5" lean-forward="false" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#907#908#0" expanded="true" />
-            <element signature="e#932#933#0" expanded="true" />
           </folding>
         </state>
       </provider>

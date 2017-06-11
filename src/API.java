@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class API {
     public API() {
         try {
-            final String url = "http://datenparty.org:5001/api";
+            final String url = "http://api.datenparty.org";
             URLConnection connection = new URL(url).openConnection();
             String encoding = connection.getContentEncoding();
             encoding = encoding == null ? "UTF-8" : encoding;
@@ -19,9 +19,5 @@ public class API {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        new API();
     }
 }
